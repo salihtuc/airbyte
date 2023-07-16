@@ -2,18 +2,34 @@
 # Copyright (c) 2023 Airbyte, Inc., all rights reserved.
 #
 
-from abc import abstractmethod
+import logging
+from abc import ABC, abstractmethod
 from io import IOBase
-from typing import Iterable, List
+from typing import Iterable, List, Set
 
+from airbyte_cdk.sources.file_based.config.abstract_file_based_spec import AbstractFileBasedSpec
 from airbyte_cdk.sources.file_based.remote_file import RemoteFile
-from pydantic import BaseModel
 from wcmatch.glob import GLOBSTAR, globmatch
 
 
-class AbstractFileBasedStreamReader(BaseModel):
+class AbstractFileBasedStreamReader(ABC):
+
+    def __init__(self):
+        self._config = None
+
+    @property
+    def config(self) -> AbstractFileBasedSpec:
+        return self._config
+
+    @config.setter
     @abstractmethod
-    def open_file(self, file: RemoteFile) -> IOBase:
+    def config(self, value: AbstractFileBasedSpec):
+        """
+        Sets the `config`
+        """
+
+    @abstractmethod
+    def open_file(self, file: RemoteFile, logger: logging.Logger) -> IOBase:
         """
         Return a file handle for reading.
 
@@ -29,6 +45,7 @@ class AbstractFileBasedStreamReader(BaseModel):
     def get_matching_files(
         self,
         globs: List[str],
+        logger: logging.Logger,
     ) -> Iterable[RemoteFile]:
         """
         Return all files that match any of the globs.
@@ -46,26 +63,29 @@ class AbstractFileBasedStreamReader(BaseModel):
         """
         ...
 
-    @staticmethod
-    def filter_files_by_globs(files: List[RemoteFile], globs: List[str]) -> Iterable[RemoteFile]:
+    @classmethod
+    def filter_files_by_globs(cls, files: List[RemoteFile], globs: List[str]) -> Iterable[RemoteFile]:
         """
         Utility method for filtering files based on globs.
         """
         seen = set()
 
         for file in files:
-            for g in globs:
-                # Use the GLOBSTAR flag to enable recursive ** matching
-                # (https://facelessuser.github.io/wcmatch/wcmatch/#globstar)
-                if globmatch(file.uri, g, flags=GLOBSTAR):
-                    if file.uri not in seen:
-                        seen.add(file.uri)
-                        yield file
+            if cls.file_matches_globs(file, globs):
+                if file.uri not in seen:
+                    seen.add(file.uri)
+                    yield file
 
     @staticmethod
-    def get_prefixes_from_globs(globs: List[str]) -> List[str]:
+    def file_matches_globs(file: RemoteFile, globs: List[str]):
+        # Use the GLOBSTAR flag to enable recursive ** matching
+        # (https://facelessuser.github.io/wcmatch/wcmatch/#globstar)
+        return any(globmatch(file.uri, g, flags=GLOBSTAR) for g in globs)
+
+    @staticmethod
+    def get_prefixes_from_globs(globs: List[str]) -> Set[str]:
         """
         Utility method for extracting prefixes from the globs.
         """
-        prefixes = {glob.split("*")[0].rstrip("/") for glob in globs}
-        return list(filter(lambda x: bool(x), prefixes))
+        prefixes = {glob.split("*")[0] for glob in globs}
+        return set(filter(lambda x: bool(x), prefixes))

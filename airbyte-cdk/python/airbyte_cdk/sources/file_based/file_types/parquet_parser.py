@@ -25,7 +25,7 @@ class ParquetParser(FileTypeParser):
     ) -> Dict[str, Any]:
         # Pyarrow can detect the schema of a parquet file by reading only its metadata.
         # https://github.com/apache/arrow/blob/main/python/pyarrow/_parquet.pyx#L1168-L1243
-        parquet_file = pq.ParquetFile(stream_reader.open_file(file))
+        parquet_file = pq.ParquetFile(stream_reader.open_file(file, logger))
         parquet_schema = parquet_file.schema_arrow
         schema = {field.name: ParquetParser.parquet_type_to_schema_type(field.type) for field in parquet_schema}
         return schema
@@ -37,7 +37,7 @@ class ParquetParser(FileTypeParser):
         stream_reader: AbstractFileBasedStreamReader,
         logger: logging.Logger,
     ) -> Iterable[Dict[str, Any]]:
-        table = pq.read_table(stream_reader.open_file(file))
+        table = pq.read_table(stream_reader.open_file(file, logger))
         for batch in table.to_batches():
             for i in range(batch.num_rows):
                 row_dict = {column: ParquetParser._to_output_value(batch.column(column)[i]) for column in table.column_names}

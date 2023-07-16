@@ -48,6 +48,7 @@ setup(
     install_requires=[
         "airbyte-protocol-models==0.3.6",
         "backoff",
+        "boto3~=1.26",
         "dpath~=2.0.1",
         "isodate~=0.6.1",
         "jsonschema~=3.2.0",
@@ -59,6 +60,7 @@ setup(
         "PyYAML~=5.4",
         "requests",
         "requests_cache",
+        "smart-open~=6.3",
         "Deprecated~=1.2",
         "Jinja2~=3.1.2",
         "cachetools",

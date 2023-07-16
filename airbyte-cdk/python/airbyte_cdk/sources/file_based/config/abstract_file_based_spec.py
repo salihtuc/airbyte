@@ -30,6 +30,14 @@ class AbstractFileBasedSpec(BaseModel):
         :return: link to docs page for this source e.g. "https://docs.airbyte.com/integrations/sources/s3"
         """
 
+    # @classmethod
+    # @abstractmethod
+    # def source_config(cls) -> Any:
+    #     """
+    #     TODO
+    #     :return: link to docs page for this source e.g. "https://docs.airbyte.com/integrations/sources/s3"
+    #     """
+    #
     @classmethod
     def schema(cls, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """

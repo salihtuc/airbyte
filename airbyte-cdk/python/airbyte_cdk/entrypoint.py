@@ -173,10 +173,16 @@ class AirbyteEntrypoint(object):
     def airbyte_message_to_string(airbyte_message: AirbyteMessage) -> str:
         return airbyte_message.json(exclude_unset=True)
 
+    @classmethod
+    def extract_catalog(cls, args: List[str]) -> TCatalog:
+        parsed_args = cls.parse_args(args)
+        return parsed_args.catalog
+
     def _emit_queued_messages(self, source) -> Iterable[AirbyteMessage]:
         if hasattr(source, "message_repository") and source.message_repository:
             yield from source.message_repository.consume_queue()
         return
+
 
 
 def launch(source: Source, args: List[str]):

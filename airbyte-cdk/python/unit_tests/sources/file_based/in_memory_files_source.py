@@ -5,6 +5,7 @@
 import csv
 import io
 import json
+import logging
 import tempfile
 from datetime import datetime
 from io import IOBase
@@ -28,7 +29,7 @@ from pydantic import AnyUrl, Field
 class InMemoryFilesSource(FileBasedSource):
     def __init__(
             self,
-            files: Mapping[str, Any] ,
+            files: Mapping[str, Any],
             file_type: str,
             availability_strategy: Optional[AbstractFileBasedAvailabilityStrategy],
             discovery_policy: Optional[AbstractDiscoveryPolicy],
@@ -43,9 +44,9 @@ class InMemoryFilesSource(FileBasedSource):
         availability_strategy = availability_strategy or DefaultFileBasedAvailabilityStrategy(stream_reader)  # type: ignore[assignment]
         super().__init__(
             stream_reader,
-            catalog=ConfiguredAirbyteCatalog(streams=catalog["streams"]) if catalog else None,
-            availability_strategy=availability_strategy,
             spec_class=InMemorySpec,
+            catalog_path="fake_path" if catalog else None,
+            availability_strategy=availability_strategy,
             discovery_policy=discovery_policy or DefaultDiscoveryPolicy(),
             parsers=parsers,
             validation_policies=validation_policies or DEFAULT_SCHEMA_VALIDATION_POLICIES,
@@ -55,6 +56,10 @@ class InMemoryFilesSource(FileBasedSource):
         # Attributes required for test purposes
         self.files = files
         self.file_type = file_type
+        self.catalog = catalog
+
+    def read_catalog(self, catalog_path: str) -> ConfiguredAirbyteCatalog:
+        return ConfiguredAirbyteCatalog(streams=self.catalog["streams"]) if self.catalog else None
 
 
 class InMemoryFilesStreamReader(AbstractFileBasedStreamReader):
@@ -65,19 +70,20 @@ class InMemoryFilesStreamReader(AbstractFileBasedStreamReader):
     def get_matching_files(
             self,
             globs: List[str],
+            logger: logging.Logger,
     ) -> Iterable[RemoteFile]:
         yield from AbstractFileBasedStreamReader.filter_files_by_globs([
-            RemoteFile(uri=f, last_modified=datetime.strptime(data["last_modified"], "%Y-%m-%dT%H:%M:%S.%fZ"), file_type=self.file_type)
+            RemoteFile(uri=f, last_modified=datetime.strptime(data["last_modified"], "%Y-%m-%dT%H:%M:%S.%fZ"))
             for f, data in self.files.items()
         ], globs)
 
-    def open_file(self, file: RemoteFile) -> IOBase:
-        if file.file_type == "csv":
+    def open_file(self, file: RemoteFile, logger: logging.Logger) -> IOBase:
+        if self.file_type == "csv":
             return self._make_csv_file_contents(file.uri)
-        elif file.file_type == "jsonl":
+        elif self.file_type == "jsonl":
             return self._make_jsonl_file_contents(file.uri)
         else:
-            raise NotImplementedError(f"No implementation for file type: {file.file_type}")
+            raise NotImplementedError(f"No implementation for file type: {self.file_type}")
 
     def _make_csv_file_contents(self, file_name: str) -> IOBase:
         fh = io.StringIO()
@@ -125,7 +131,7 @@ class TemporaryParquetFilesStreamReader(InMemoryFilesStreamReader):
     A file reader that writes RemoteFiles to a temporary file and then reads them back.
     """
 
-    def open_file(self, file: RemoteFile) -> IOBase:
+    def open_file(self, file: RemoteFile, logger: logging.Logger) -> IOBase:
         return io.BytesIO(self._create_file(file.uri))
 
     def _create_file(self, file_name: str) -> bytes:
