@@ -26,9 +26,9 @@ single_csv_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -333,17 +333,17 @@ multi_csv_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
@@ -415,17 +415,17 @@ multi_csv_stream_n_file_exceeds_limit_for_inference = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
@@ -496,9 +496,9 @@ invalid_csv_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1",),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -564,9 +564,9 @@ csv_single_stream_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
@@ -644,17 +644,17 @@ csv_multi_stream_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col3",),
-                    ("val13b",),
-                    ("val23b",),
+                    "col3",
+                    "val13b",
+                    "val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
@@ -760,10 +760,10 @@ csv_custom_format_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11", "val12", "val |13|"),
-                    ("val21", "val22", "val23"),
-                    ("val,31", "val |,32|", "val, !!!! 33"),
+                    "col1#col2#col3",
+                    "val11#val12#val |13|",
+                    "val21#val22#val23",
+                    "val,31#val |,32|#val, !!!! 33",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -847,10 +847,10 @@ csv_legacy_format_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11", "val12", "val |13|"),
-                    ("val21", "val22", "val23"),
-                    ("val,31", "val |,32|", "val, !!!! 33"),
+                    "col1#col2#col3",
+                    "val11#val12#val |13|",
+                    "val21#val22#val23",
+                    "val,31#val |,32|#val, !!!! 33",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -951,17 +951,17 @@ multi_stream_custom_format = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val !! 12a"),
-                    ("val !! 21a", "val22a"),
+                    "col1#col2",
+                    "val11a#val !! 12a",
+                    "val !! 21a#val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col3",),
-                    ("val @@@@ 13b",),
-                    ("val23b",),
+                    "col3",
+                    "val @@@@ 13b",
+                    "val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
@@ -1063,9 +1063,9 @@ empty_schema_inference_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -1134,17 +1134,17 @@ schemaless_csv_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
@@ -1218,17 +1218,17 @@ schemaless_csv_multi_stream_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col3",),
-                    ("val13b",),
-                    ("val23b",),
+                    "col3",
+                    "val13b",
+                    "val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
@@ -1317,17 +1317,17 @@ schemaless_with_user_input_schema_fails_connection_check_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
@@ -1394,17 +1394,17 @@ schemaless_with_user_input_schema_fails_connection_check_multi_stream_scenario =
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col3",),
-                    ("val13b",),
-                    ("val23b",),
+                    "col3",
+                    "val13b",
+                    "val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
