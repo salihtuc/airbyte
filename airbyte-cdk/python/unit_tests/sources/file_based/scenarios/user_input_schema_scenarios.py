@@ -21,9 +21,9 @@ _base_user_input_schema_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -236,25 +236,25 @@ _base_multi_stream_user_input_schema_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", 21),
-                    ("val12a", 22),
+                    "col1,col2",
+                    "val11a,21",
+                    "val12a,22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1",),
-                    ("val11c",),
-                    ("val21c",),
+                    "col1",
+                    "val11c",
+                    "val21c",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
