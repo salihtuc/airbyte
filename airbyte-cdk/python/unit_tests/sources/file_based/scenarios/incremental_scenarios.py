@@ -23,9 +23,9 @@ single_csv_input_state_is_earlier_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -109,9 +109,9 @@ single_csv_file_is_skipped_if_same_modified_at_as_in_history = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -192,9 +192,9 @@ single_csv_file_is_synced_if_modified_at_is_more_recent_than_in_history = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -277,9 +277,9 @@ single_csv_no_input_state_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             }
@@ -350,17 +350,17 @@ multi_csv_same_timestamp_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
@@ -440,9 +440,9 @@ single_csv_input_state_is_later_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             }
@@ -525,17 +525,17 @@ multi_csv_different_timestamps_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-04T03:54:07.000000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
@@ -622,25 +622,25 @@ multi_csv_per_timestamp_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11c", "val12c", "val13c"),
-                    ("val21c", "val22c", "val23c"),
+                    "col1,col2,col3",
+                    "val11c,val12c,val13c",
+                    "val21c,val22c,val23c",
                 ],
                 "last_modified": "2023-06-06T03:54:07.000000Z",
             },
@@ -733,25 +733,25 @@ multi_csv_skip_file_if_already_in_history = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11c", "val12c", "val13c"),
-                    ("val21c", "val22c", "val23c"),
+                    "col1,col2,col3",
+                    "val11c,val12c,val13c",
+                    "val21c,val22c,val23c",
                 ],
                 "last_modified": "2023-06-06T03:54:07.000000Z",
             },
@@ -853,25 +853,25 @@ multi_csv_include_missing_files_within_history_range = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11c", "val12c", "val13c"),
-                    ("val21c", "val22c", "val23c"),
+                    "col1,col2,col3",
+                    "val11c,val12c,val13c",
+                    "val21c,val22c,val23c",
                 ],
                 "last_modified": "2023-06-06T03:54:07.000000Z",
             },
@@ -966,25 +966,25 @@ multi_csv_remove_old_files_if_history_is_full_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-06T03:54:07.000000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-07T03:54:07.000000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11c", "val12c", "val13c"),
-                    ("val21c", "val22c", "val23c"),
+                    "col1,col2,col3",
+                    "val11c,val12c,val13c",
+                    "val21c,val22c,val23c",
                 ],
                 "last_modified": "2023-06-10T03:54:07.000000Z",
             },
@@ -1102,33 +1102,33 @@ multi_csv_same_timestamp_more_files_than_history_size_scenario = (
         {
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11c", "val12c", "val13c"),
-                    ("val21c", "val22c", "val23c"),
+                    "col1,col2,col3",
+                    "val11c,val12c,val13c",
+                    "val21c,val22c,val23c",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "d.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11d", "val12d", "val13d"),
-                    ("val21d", "val22d", "val23d"),
+                    "col1,col2,col3",
+                    "val11d,val12d,val13d",
+                    "val21d,val22d,val23d",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
@@ -1219,33 +1219,33 @@ multi_csv_sync_recent_files_if_history_is_incomplete_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11c", "val12c", "val13c"),
-                    ("val21c", "val22c", "val23c"),
+                    "col1,col2,col3",
+                    "val11c,val12c,val13c",
+                    "val21c,val22c,val23c",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "d.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11d", "val12d", "val13d"),
-                    ("val21d", "val22d", "val23d"),
+                    "col1,col2,col3",
+                    "val11d,val12d,val13d",
+                    "val21d,val22d,val23d",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
@@ -1335,33 +1335,33 @@ multi_csv_sync_files_within_time_window_if_history_is_incomplete__different_time
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-06T03:54:07.000000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11c", "val12c", "val13c"),
-                    ("val21c", "val22c", "val23c"),
+                    "col1,col2,col3",
+                    "val11c,val12c,val13c",
+                    "val21c,val22c,val23c",
                 ],
                 "last_modified": "2023-06-07T03:54:07.000000Z",
             },
             "d.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11d", "val12d", "val13d"),
-                    ("val21d", "val22d", "val23d"),
+                    "col1,col2,col3",
+                    "val11d,val12d,val13d",
+                    "val21d,val22d,val23d",
                 ],
                 "last_modified": "2023-06-08T03:54:07.000000Z",
             },
@@ -1457,33 +1457,33 @@ multi_csv_sync_files_within_history_time_window_if_history_is_incomplete_differe
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11a", "val12a"),
-                    ("val21a", "val22a"),
+                    "col1,col2",
+                    "val11a,val12a",
+                    "val21a,val22a",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11b", "val12b", "val13b"),
-                    ("val21b", "val22b", "val23b"),
+                    "col1,col2,col3",
+                    "val11b,val12b,val13b",
+                    "val21b,val22b,val23b",
                 ],
                 "last_modified": "2023-06-06T03:54:07.000000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11c", "val12c", "val13c"),
-                    ("val21c", "val22c", "val23c"),
+                    "col1,col2,col3",
+                    "val11c,val12c,val13c",
+                    "val21c,val22c,val23c",
                 ],
                 "last_modified": "2023-06-07T03:54:07.000000Z",
             },
             "d.csv": {
                 "contents": [
-                    ("col1", "col2", "col3"),
-                    ("val11d", "val12d", "val13d"),
-                    ("val21d", "val22d", "val23d"),
+                    "col1,col2,col3",
+                    "val11d,val12d,val13d",
+                    "val21d,val22d,val23d",
                 ],
                 "last_modified": "2023-06-08T03:54:07.000000Z",
             },
