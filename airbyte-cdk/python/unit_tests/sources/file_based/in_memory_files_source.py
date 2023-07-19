@@ -36,10 +36,9 @@ class InMemoryFilesSource(FileBasedSource):
             parsers: Mapping[str, FileTypeParser],
             stream_reader: Optional[AbstractFileBasedStreamReader],
             catalog: Optional[Mapping[str, Any]],
-            file_write_options: Mapping[str, Any],
             max_history_size: int,
     ):
-        stream_reader = stream_reader or InMemoryFilesStreamReader(files=files, file_type=file_type, file_write_options=file_write_options)
+        stream_reader = stream_reader or InMemoryFilesStreamReader(files=files, file_type=file_type)
         availability_strategy = availability_strategy or DefaultFileBasedAvailabilityStrategy(stream_reader)  # type: ignore[assignment]
         super().__init__(
             stream_reader,
@@ -60,7 +59,6 @@ class InMemoryFilesSource(FileBasedSource):
 class InMemoryFilesStreamReader(AbstractFileBasedStreamReader):
     files: Mapping[str, Mapping[str, Any]]
     file_type: str
-    file_write_options: Optional[Mapping[str, Any]]
 
     def get_matching_files(
             self,

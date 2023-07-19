@@ -812,12 +812,6 @@ csv_custom_format_scenario = (
                       "_ab_source_file_url": "a.csv"}, "stream": "stream1"},
         ]
     )
-    .set_file_write_options(
-        {
-            "delimiter": "#",
-            "quotechar": "|",
-        }
-    )
 ).build()
 
 
@@ -898,12 +892,6 @@ csv_legacy_format_scenario = (
             {"data": {"col1": "val,31", "col2": "val |,32|", "col3": "val, !! 33", "_ab_source_file_last_modified": "2023-06-05T03:54:07Z",
                       "_ab_source_file_url": "a.csv"}, "stream": "stream1"},
         ]
-    )
-    .set_file_write_options(
-        {
-            "delimiter": "#",
-            "quotechar": "|",
-        }
     )
 ).build()
 
@@ -1035,11 +1023,6 @@ multi_stream_custom_format = (
             {"data": {"col3": "val23b", "_ab_source_file_last_modified": "2023-06-05T03:54:07Z", "_ab_source_file_url": "b.csv"},
              "stream": "stream2"},
         ]
-    )
-    .set_file_write_options(
-        {
-            "delimiter": "#",
-        }
     )
 ).build()
 

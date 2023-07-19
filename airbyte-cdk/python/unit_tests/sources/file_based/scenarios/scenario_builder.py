@@ -45,7 +45,6 @@ class TestScenario:
             expected_discover_error: Tuple[Optional[Type[Exception]], Optional[str]],
             expected_read_error: Tuple[Optional[Type[Exception]], Optional[str]],
             incremental_scenario_config: Optional[IncrementalScenarioConfig],
-            file_write_options: Mapping[str, Any],
             max_history_size: int,
     ):
         self.name = name
@@ -67,7 +66,6 @@ class TestScenario:
             parsers,
             stream_reader,
             self.configured_catalog(SyncMode.incremental if incremental_scenario_config else SyncMode.full_refresh),
-            file_write_options,
             max_history_size,
         )
         self.incremental_scenario_config = incremental_scenario_config
@@ -202,10 +200,6 @@ class TestScenarioBuilder:
         self._expected_read_error = error, message
         return self
 
-    def set_file_write_options(self, file_write_options: Mapping[str, Any]) -> "TestScenarioBuilder":
-        self._file_write_options = file_write_options
-        return self
-
     def copy(self) -> "TestScenarioBuilder":
         return deepcopy(self)
 
@@ -231,6 +225,5 @@ class TestScenarioBuilder:
             self._expected_discover_error,
             self._expected_read_error,
             self._incremental_scenario_config,
-            self._file_write_options,
             self._max_history_size,
         )
