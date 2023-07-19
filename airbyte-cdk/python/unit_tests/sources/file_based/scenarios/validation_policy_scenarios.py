@@ -11,33 +11,33 @@ _base_single_stream_scenario = (
         {
             "a.csv": {  # The records in this file do not conform to the schema
                 "contents": [
-                    ("col1", "col2"),
-                    ("val_a_11", "val_a_21"),
-                    ("val_a_12", "val_a_22"),
+                    "col1,col2",
+                    "val_a_11,val_a_21",
+                    "val_a_12,val_a_22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b.csv": {
                 "contents": [
-                    ("col1",),
-                    ("val_b_11",),
-                    ("val_b_12",),
+                    "col1",
+                    "val_b_11",
+                    "val_b_12",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "c.csv": {
                 "contents": [
-                    ("col1",),
-                    ("val_c_11",),
-                    ("val_c_12","val_c_22"),  # This record doesn't conform to the schema
-                    ("val_c_13",),
+                    "col1",
+                    "val_c_11",
+                    "val_c_12,val_c_22",  # This record doesn't conform to the schema
+                    "val_c_13",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "d.csv": {
                 "contents": [
-                    ("col1",),
-                    ("val_d_11",),
+                    "col1",
+                    "val_d_11",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
@@ -82,58 +82,58 @@ _base_multi_stream_scenario = (
         {
             "a/a1.csv": {  # The records in this file do not conform to the schema
                 "contents": [
-                    ("col1", "col2"),
-                    ("val_aa1_11", "val_aa1_21"),
-                    ("val_aa1_12", "val_aa1_22"),
+                    "col1,col2",
+                    "val_aa1_11,val_aa1_21",
+                    "val_aa1_12,val_aa1_22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "a/a2.csv": {
                 "contents": [
-                    ("col1",),
-                    ("val_aa2_11",),
-                    ("val_aa2_12",),
+                    "col1",
+                    "val_aa2_11",
+                    "val_aa2_12",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "a/a3.csv": {
                 "contents": [
-                    ("col1",),
-                    ("val_aa3_11",),
-                    ("val_aa3_12", "val_aa3_22"),  # This record does not conform to the schema
-                    ("val_aa3_13",),
+                    "col1",
+                    "val_aa3_11",
+                    "val_aa3_12,val_aa3_22",  # This record does not conform to the schema
+                    "val_aa3_13",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "a/a4.csv": {
                 "contents": [
-                    ("col1",),
-                    ("val_aa4_11",),
+                    "col1",
+                    "val_aa4_11",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
 
             "b/b1.csv": {  # The records in this file do not conform to the schema
                 "contents": [
-                    ("col1",),
-                    ("val_bb1_11",),
-                    ("val_bb1_12",),
+                    "col1",
+                    "val_bb1_11",
+                    "val_bb1_12",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b/b2.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val_bb2_11", "val_bb2_21"),
-                    ("val_bb2_12", "val_bb2_22"),
+                    "col1,col2",
+                    "val_bb2_11,val_bb2_21",
+                    "val_bb2_12,val_bb2_22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },
             "b/b3.csv": {
                 "contents": [
-                    ("col1",),
-                    ("val_bb3_11",),
-                    ("val_bb3_12",),
+                    "col1",
+                    "val_bb3_11",
+                    "val_bb3_12",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             },

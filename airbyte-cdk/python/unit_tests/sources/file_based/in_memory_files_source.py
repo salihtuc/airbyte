@@ -80,21 +80,7 @@ class InMemoryFilesStreamReader(AbstractFileBasedStreamReader):
             raise NotImplementedError(f"No implementation for file type: {file.file_type}")
 
     def _make_csv_file_contents(self, file_name: str) -> IOBase:
-
         return io.StringIO("\n".join([s.strip() for s in self.files[file_name]["contents"]]))
-
-        fh = io.StringIO()
-
-        if self.file_write_options:
-            csv.register_dialect("in_memory_dialect", **self.file_write_options)
-            writer = csv.writer(fh, dialect="in_memory_dialect")
-            writer.writerows(self.files[file_name]["contents"])
-            csv.unregister_dialect("in_memory_dialect")
-        else:
-            writer = csv.writer(fh)
-            writer.writerows(self.files[file_name]["contents"])
-        fh.seek(0)
-        return fh
 
     def _make_jsonl_file_contents(self, file_name: str) -> IOBase:
         fh = io.BytesIO()
