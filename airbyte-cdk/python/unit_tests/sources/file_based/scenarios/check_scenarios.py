@@ -28,9 +28,9 @@ _base_success_scenario = (
         {
             "a.csv": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
@@ -90,9 +90,9 @@ success_extensionless_scenario = (
         {
             "a": {
                 "contents": [
-                    ("col1", "col2"),
-                    ("val11", "val12"),
-                    ("val21", "val22"),
+                    "col1,col2",
+                    "val11,val12",
+                    "val21,val22",
                 ],
                 "last_modified": "2023-06-05T03:54:07.000Z",
             }
