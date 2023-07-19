@@ -232,7 +232,6 @@ def _verify_read_output(output: Dict[str, Any], scenario: TestScenario) -> None:
         elif "state" in actual:
             assert actual["state"]["data"] == expected
 
-
     if scenario.expected_logs:
         read_logs = scenario.expected_logs.get("read")
         assert len(logs) == (len(read_logs) if read_logs else 0)
