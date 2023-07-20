@@ -477,7 +477,10 @@ async def with_connector_acceptance_test(context: ConnectorContext, connector_un
         .with_entrypoint(["python", "-m", "pytest", "-p", "connector_acceptance_test.plugin", "--suppress-tests-failed-exit-code"])
     )
     if "_EXPERIMENTAL_DAGGER_RUNNER_HOST" in os.environ:
-        cat_container = cat_container.with_env_variable("_EXPERIMENTAL_DAGGER_RUNNER_HOST", "unix:///var/run/buildkit/buildkitd.sock")
+        context.logger.info("Using experimental dagger runner host")
+        cat_container = cat_container.with_env_variable(
+            "_EXPERIMENTAL_DAGGER_RUNNER_HOST", "unix:///var/run/buildkit/buildkitd.sock"
+        ).with_unix_socket("/var/run/buildkit/buildkitd.sock", context.dagger_client.host().unix_socket("/var/run/buildkit/buildkitd.sock"))
 
     return cat_container.with_unix_socket(
         "/var/run/docker.sock", context.dagger_client.host().unix_socket("/var/run/docker.sock")
