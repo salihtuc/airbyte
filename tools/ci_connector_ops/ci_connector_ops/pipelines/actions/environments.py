@@ -478,13 +478,26 @@ async def with_connector_acceptance_test(context: ConnectorContext, connector_un
     )
     if "_EXPERIMENTAL_DAGGER_RUNNER_HOST" in os.environ:
         context.logger.info("Using experimental dagger runner host")
-        cat_container = cat_container.with_env_variable(
-            "_EXPERIMENTAL_DAGGER_RUNNER_HOST", "unix:///var/run/buildkit/buildkitd.sock"
-        ).with_unix_socket("/var/run/buildkit/buildkitd.sock", context.dagger_client.host().unix_socket("/var/run/buildkit/buildkitd.sock"))
+        cat_container = (
+            cat_container
+            .with_env_variable(
+                "_EXPERIMENTAL_DAGGER_RUNNER_HOST", 
+                "unix:///var/run/buildkit/buildkitd.sock"
+            )
+            .with_unix_socket(
+                "/var/run/buildkit/buildkitd.sock", 
+                context.dagger_client.host().unix_socket("/var/run/buildkit/buildkitd.sock")
+            )
+        )
 
-    return cat_container.with_unix_socket(
-        "/var/run/docker.sock", context.dagger_client.host().unix_socket("/var/run/docker.sock")
-    ).with_exec(cat_command_args)
+    return (
+        cat_container
+        .with_unix_socket(
+            "/var/run/docker.sock", 
+            context.dagger_client.host().unix_socket("/var/run/docker.sock")
+        )
+        .with_exec(cat_command_args)
+        )
 
 
 def with_gradle(
