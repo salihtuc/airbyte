@@ -67,6 +67,8 @@ class ConnectorRunner:
             container = dagger_client.host().directory(str(self.base_path)).docker_build()
         else:
             container = dagger_client.container().from_(self.image_name)
+        # airbyte-ci might pass a cachebuster env var to force rebuild of the container image
+        # We pass this env var to the container to ensure the cache is busted
         if os.environ.get("CACHEBUSTER"):
             container = container.with_env_variable("CACHEBUSTER", os.environ["CACHEBUSTER"])
         return container
