@@ -88,11 +88,11 @@ class ConnectorRunner:
                 try:
                     container = container.with_exec(airbyte_command)
                     return await container.stdout()
-                except Exception as e:
+                except dagger.QueryError as e:
                     if raise_container_error:
                         raise e
                     else:
-                        if isinstance(e, dagger.QueryError):
+                        if isinstance(e, dagger.ExecError):
                             return e.stdout
                         return str(e)
 
