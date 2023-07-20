@@ -57,10 +57,6 @@ inputs:
   gcs_credentials:
     description: "GCP credentials for GCS"
     required: false
-  dagger_cli_commit:
-    description: "Commit SHA of dagger-cli to use"
-    required: false
-    default: "6ed6264f1c4efbf84d310a104b57ef1bc57d57b0"
   ci_job_key:
     description: "CI job key"
     required: false
