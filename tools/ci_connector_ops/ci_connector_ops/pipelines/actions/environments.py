@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import re
 import uuid
 from datetime import datetime
@@ -449,8 +450,10 @@ async def with_connector_acceptance_test(context: ConnectorContext, connector_un
         has_custom_cat_setup = "acceptance.py" in await context.get_connector_dir().directory("integration_tests").entries()
     except DaggerError:
         has_custom_cat_setup = False
+
     if has_custom_cat_setup:
         cat_command_args += ["-p", "integration_tests.acceptance"]
+
     cat_container = (
         context.dagger_client.container()
         .from_("python:3.10.12")
@@ -472,11 +475,13 @@ async def with_connector_acceptance_test(context: ConnectorContext, connector_un
         # We keep the guarantee that a CAT runs everyday.
         .with_env_variable("CACHEBUSTER", datetime.utcnow().strftime("%Y%m%d"))
         .with_entrypoint(["python", "-m", "pytest", "-p", "connector_acceptance_test.plugin", "--suppress-tests-failed-exit-code"])
-        .with_unix_socket("/var/run/docker.sock", context.dagger_client.host().unix_socket("/var/run/docker.sock"))
     )
-    if context.is_ci:
+    if "_EXPERIMENTAL_DAGGER_RUNNER_HOST" in os.environ:
         cat_container = cat_container.with_env_variable("_EXPERIMENTAL_DAGGER_RUNNER_HOST", "unix:///var/run/buildkit/buildkitd.sock")
-    return cat_container.with_exec(cat_command_args)
+
+    return cat_container.with_unix_socket(
+        "/var/run/docker.sock", context.dagger_client.host().unix_socket("/var/run/docker.sock")
+    ).with_exec(cat_command_args)
 
 
 def with_gradle(
