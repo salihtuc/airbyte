@@ -94,9 +94,10 @@ async def run_all_tests(context: ConnectorContext) -> List[StepResult]:
 
     connector_image_tar_file, _ = await export_container_to_tarball(context, build_connector_image_results.output_artifact)
 
+    acceptance_tests_results = await AcceptanceTests(context).run(connector_image_tar_file)
+    step_results.append(acceptance_tests_results)
+
     integration_tests_results = await IntegrationTest(context).run(connector_image_tar_file, normalization_tar_file)
     step_results.append(integration_tests_results)
 
-    acceptance_tests_results = await AcceptanceTests(context).run(connector_image_tar_file)
-    step_results.append(acceptance_tests_results)
     return step_results
