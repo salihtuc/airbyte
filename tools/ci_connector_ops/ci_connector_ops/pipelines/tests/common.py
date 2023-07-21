@@ -16,7 +16,7 @@ from ci_connector_ops.pipelines.actions import environments
 from ci_connector_ops.pipelines.bases import CIContext, PytestStep, Step, StepResult, StepStatus
 from ci_connector_ops.pipelines.utils import METADATA_FILE_NAME
 from ci_connector_ops.utils import Connector
-from dagger import Container
+from dagger import File
 
 
 class VersionCheck(Step, ABC):
@@ -177,11 +177,11 @@ class AcceptanceTests(PytestStep):
 
     title = "Acceptance tests"
 
-    async def _run(self, connector: Container) -> StepResult:
+    async def _run(self, connector_under_test_image_tar: File) -> StepResult:
         """Run the acceptance test suite on a connector dev image. Build the connector acceptance test image if the tag is :dev.
 
         Args:
-            connector (Container): The connector under test container.
+            connector_under_test_image_tar (File): The file containing the tar archive the image of the connector under test.
 
         Returns:
             StepResult: Failure or success of the acceptances tests with stdout and stderr.
@@ -189,7 +189,7 @@ class AcceptanceTests(PytestStep):
         if not self.context.connector.acceptance_test_config:
             return StepResult(self, StepStatus.SKIPPED)
 
-        cat_container = await environments.with_connector_acceptance_test(self.context, connector)
+        cat_container = await environments.with_connector_acceptance_test(self.context, connector_under_test_image_tar)
         secret_dir = cat_container.directory("/test_input/secrets")
 
         async with asyncer.create_task_group() as task_group:

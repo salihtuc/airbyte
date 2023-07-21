@@ -435,7 +435,7 @@ def with_docker_cli(context: ConnectorContext) -> Container:
     return with_bound_docker_host(context, docker_cli)
 
 
-async def with_connector_acceptance_test(context: ConnectorContext, connector_under_test: Container) -> Container:
+async def with_connector_acceptance_test(context: ConnectorContext, connector_under_test_image_tar: File) -> Container:
     """Create a container to run connector acceptance tests, bound to a persistent docker host.
 
     Args:
@@ -466,9 +466,9 @@ async def with_connector_acceptance_test(context: ConnectorContext, connector_un
         .with_workdir("/cat")
         .with_env_variable("ACCEPTANCE_TEST_DOCKER_CONTAINER", "1")
         .with_exec(["pip", "install", "."])
+        .with_mounted_file("container_under_test.tar", connector_under_test_image_tar)
         .with_workdir("/test_input")
         .with_mounted_directory("/test_input", context.get_connector_dir())
-        .with_env_variable("CONTAINER_ID", await connector_under_test.id())
         .with_(mounted_connector_secrets(context))
         # This bursts the CAT cached results everyday.
         # It's cool because in case of a partially failing nightly build the connectors that already ran CAT won't re-run CAT.
@@ -478,26 +478,13 @@ async def with_connector_acceptance_test(context: ConnectorContext, connector_un
     )
     if "_EXPERIMENTAL_DAGGER_RUNNER_HOST" in os.environ:
         context.logger.info("Using experimental dagger runner host")
-        cat_container = (
-            cat_container
-            .with_env_variable(
-                "_EXPERIMENTAL_DAGGER_RUNNER_HOST", 
-                "unix:///var/run/buildkit/buildkitd.sock"
-            )
-            .with_unix_socket(
-                "/var/run/buildkit/buildkitd.sock", 
-                context.dagger_client.host().unix_socket("/var/run/buildkit/buildkitd.sock")
-            )
-        )
+        cat_container = cat_container.with_env_variable(
+            "_EXPERIMENTAL_DAGGER_RUNNER_HOST", "unix:///var/run/buildkit/buildkitd.sock"
+        ).with_unix_socket("/var/run/buildkit/buildkitd.sock", context.dagger_client.host().unix_socket("/var/run/buildkit/buildkitd.sock"))
 
-    return (
-        cat_container
-        .with_unix_socket(
-            "/var/run/docker.sock", 
-            context.dagger_client.host().unix_socket("/var/run/docker.sock")
-        )
-        .with_exec(cat_command_args)
-        )
+    return cat_container.with_unix_socket(
+        "/var/run/docker.sock", context.dagger_client.host().unix_socket("/var/run/docker.sock")
+    ).with_exec(cat_command_args)
 
 
 def with_gradle(

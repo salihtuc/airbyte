@@ -31,6 +31,7 @@ class ConnectorRunner:
         self._connector_configuration_path = connector_configuration_path
         self._custom_environment_variables = custom_environment_variables
         self.dagger_connection = dagger.Connection(dagger.Config())
+        self._connector_under_test_container = None
 
     def call_spec(self, raise_container_error=False) -> List[AirbyteMessage]:
         return self._run(["spec"], raise_container_error)
@@ -61,17 +62,19 @@ class ConnectorRunner:
         )
 
     def get_connector_container(self, dagger_client) -> dagger.Container:
-        if container_id := os.environ.get("CONTAINER_ID"):
-            container = dagger_client.container(dagger.ContainerID(container_id))
-        elif self.image_name.endswith(":dev"):
-            container = dagger_client.host().directory(str(self.base_path)).docker_build()
+        if Path("/cat/container_under_test.tar").exists():
+            container_under_test_tar_file = (
+                dagger_client.host().directory("/cat", include="container_under_test.tar").file("container_under_test.tar")
+            )
+            container = dagger_client.container().import_(container_under_test_tar_file)
         else:
             container = dagger_client.container().from_(self.image_name)
-        # airbyte-ci might pass a cachebuster env var to force rebuild of the container image
+        # # # airbyte-ci might pass a cachebuster env var to force rebuild of the container image
         # We pass this env var to the container to ensure the cache is busted
         if os.environ.get("CACHEBUSTER"):
             container = container.with_env_variable("CACHEBUSTER", os.environ["CACHEBUSTER"])
-        return container
+        self._connector_under_test_container = container
+        return self._connector_under_test_container
 
     def _run(self, airbyte_command: List[str], raise_container_error: bool, config=None, catalog=None, state=None) -> List[AirbyteMessage]:
         async def run_in_dagger(config, catalog, state):
@@ -84,7 +87,7 @@ class ConnectorRunner:
                 if catalog:
                     container = container.with_new_file("/data/catalog.json", catalog.json())
                 for key, value in self._custom_environment_variables.items():
-                    container = container.with_env_variable(key, value)
+                    container = container.with_env_variable(key, str(value))
                 try:
                     container = container.with_exec(airbyte_command)
                     return await container.stdout()
