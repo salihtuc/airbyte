@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import List, Mapping, Optional
 
 import dagger
+import yaml
 from airbyte_protocol.models import AirbyteMessage, ConfiguredAirbyteCatalog, OrchestratorType
 from airbyte_protocol.models import Type as AirbyteMessageType
 from connector_acceptance_test.utils import SecretDict
@@ -31,6 +32,7 @@ class ConnectorRunner:
         self._runs = 0
         self._connector_configuration_path = connector_configuration_path
         self._custom_environment_variables = custom_environment_variables
+        self._check_connector_under_test()
 
     async def call_spec(self, raise_container_error=False) -> List[AirbyteMessage]:
         return await self._run(["spec"], raise_container_error)
@@ -63,23 +65,23 @@ class ConnectorRunner:
         )
 
     async def get_container_env_variable(self, name: str):
-        return await self._get_connector_container(self.dagger_client).env_variable(name)
+        return await self._get_connector_container().env_variable(name)
 
     async def get_container_label(self, label: str):
-        return await self._get_connector_container(self.dagger_client).label(label)
+        return await self._get_connector_container().label(label)
 
     async def get_container_entrypoint(self):
-        entrypoint = await self._get_connector_container(self.dagger_client).entrypoint()
+        entrypoint = await self._get_connector_container().entrypoint()
         return " ".join(entrypoint)
 
-    def _get_connector_container(self, dagger_client) -> dagger.Container:
+    def _get_connector_container(self) -> dagger.Container:
         if Path("/cat/container_under_test.tar").exists():
             container_under_test_tar_file = (
-                dagger_client.host().directory("/cat", include="container_under_test.tar").file("container_under_test.tar")
+                self.dagger_client.host().directory("/cat", include="container_under_test.tar").file("container_under_test.tar")
             )
-            container = dagger_client.container().import_(container_under_test_tar_file)
+            container = self.dagger_client.container().import_(container_under_test_tar_file)
         else:
-            container = dagger_client.container().from_(self.image_name)
+            container = self.dagger_client.container().from_(self.image_name)
         # # # airbyte-ci might pass a cachebuster env var to force rebuild of the container image
         # We pass this env var to the container to ensure the cache is busted
         if os.environ.get("CACHEBUSTER"):
@@ -90,7 +92,7 @@ class ConnectorRunner:
     async def _run(
         self, airbyte_command: List[str], raise_container_error: bool, config=None, catalog=None, state=None
     ) -> List[AirbyteMessage]:
-        container = self._get_connector_container(self.dagger_client)
+        container = self._get_connector_container()
         if config:
             container = container.with_new_file("/data/tap_config.json", json.dumps(dict(config)))
         if state:
@@ -157,3 +159,11 @@ class ConnectorRunner:
                 json.dump(new_configuration, new_configuration_file)
             logging.info(f"Stored most recent configuration value to {new_configuration_file_path}")
             return new_configuration_file_path
+
+    def _check_connector_under_test(self):
+        if connector_under_test_technical_name := os.environ.get("CONNECTOR_UNDER_TEST_TECHNICAL_NAME"):
+            metadata = yaml.safe_load(Path("/test_input/metadata.yaml").read_text())
+            assert metadata["data"]["dockerRepository"] == f"airbyte/{connector_under_test_technical_name}", (
+                f"Connector under test env var {connector_under_test_technical_name} does not match the connector "
+                f"being tested {metadata['data']['dockerRepository']}"
+            )
