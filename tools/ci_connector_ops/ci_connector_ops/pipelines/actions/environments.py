@@ -466,6 +466,7 @@ async def with_connector_acceptance_test(context: ConnectorContext, connector_un
         .with_workdir("/cat")
         .with_env_variable("ACCEPTANCE_TEST_DOCKER_CONTAINER", "1")
         .with_exec(["pip", "install", "."])
+        .with_env_variable("CONNECTOR_UNDER_TEST_TECHNICAL_NAME", context.connector.technical_name)
         .with_mounted_file("container_under_test.tar", connector_under_test_image_tar)
         .with_workdir("/test_input")
         .with_mounted_directory("/test_input", context.get_connector_dir())
