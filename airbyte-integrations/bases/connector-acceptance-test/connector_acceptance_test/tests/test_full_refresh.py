@@ -18,14 +18,14 @@ from connector_acceptance_test.utils.json_schema_helper import CatalogField
 # from airbyte_pr import ConfiguredAirbyteCatalog, Type
 
 
-def primary_keys_by_stream(configured_catalog: ConfiguredAirbyteCatalog) -> Mapping[str, List[CatalogField]]:
+async def primary_keys_by_stream(configured_catalog: ConfiguredAirbyteCatalog) -> Mapping[str, List[CatalogField]]:
     """Get PK fields for each stream
 
     :param configured_catalog:
     :return:
     """
     data = {}
-    for stream in configured_catalog.streams:
+    for stream in await configured_catalog.streams:
         helper = JsonSchemaHelper(schema=stream.stream.json_schema)
         pks = stream.primary_key or []
         data[stream.stream.name] = [helper.field(pk) for pk in pks]
@@ -84,7 +84,7 @@ class TestFullRefresh(BaseTest):
                 detailed_logger.log_json_list(missing_records)
                 pytest.fail(msg)
 
-    def test_sequential_reads(
+    async def test_sequential_reads(
         self,
         connector_config: SecretDict,
         configured_catalog: ConfiguredAirbyteCatalog,
@@ -93,13 +93,13 @@ class TestFullRefresh(BaseTest):
         detailed_logger: Logger,
     ):
         configured_catalog = full_refresh_only_catalog(configured_catalog)
-        output_1 = docker_runner.call_read(connector_config, configured_catalog)
+        output_1 = await docker_runner.call_read(connector_config, configured_catalog)
         records_1 = [message.record for message in output_1 if message.type == Type.RECORD]
 
         # sleep for 1 second to ensure that the emitted_at timestamp is different
         time.sleep(1)
 
-        output_2 = docker_runner.call_read(connector_config, configured_catalog)
+        output_2 = await docker_runner.call_read(connector_config, configured_catalog)
         records_2 = [message.record for message in output_2 if message.type == Type.RECORD]
 
         self.assert_emitted_at_increase_on_subsequent_runs(records_1, records_2)

@@ -8,6 +8,7 @@ import itertools
 import json
 import logging
 import os
+import sys
 from glob import glob
 from logging import Logger
 from pathlib import Path
@@ -99,7 +100,7 @@ def configured_catalog_path_fixture(inputs, base_path) -> Optional[str]:
 
 
 @pytest.fixture(name="configured_catalog")
-def configured_catalog_fixture(
+async def configured_catalog_fixture(
     configured_catalog_path: Optional[str],
     discovered_catalog: MutableMapping[str, AirbyteStream],
 ) -> ConfiguredAirbyteCatalog:
@@ -145,11 +146,25 @@ def connector_spec_fixture(connector_spec_path) -> ConnectorSpecification:
     return ConnectorSpecification.parse_obj(spec_obj)
 
 
+@pytest.fixture(scope="session")
+def anyio_backend():
+    return "asyncio"
+
+
+@pytest.fixture(scope="session")
+async def dagger_client(anyio_backend):
+    async with dagger.Connection(config=dagger.Config(log_output=sys.stderr)) as client:
+        yield client
+
+
 @pytest.fixture(name="docker_runner")
-def docker_runner_fixture(image_tag, base_path, connector_config_path, custom_environment_variables) -> ConnectorRunner:
+async def docker_runner_fixture(
+    image_tag, base_path, connector_config_path, custom_environment_variables, dagger_client
+) -> ConnectorRunner:
     return ConnectorRunner(
         image_tag,
         base_path,
+        dagger_client,
         connector_configuration_path=connector_config_path,
         custom_environment_variables=custom_environment_variables,
     )
@@ -162,12 +177,12 @@ def previous_connector_image_name_fixture(image_tag, inputs) -> str:
 
 
 @pytest.fixture(name="previous_connector_docker_runner")
-def previous_connector_docker_runner_fixture(previous_connector_image_name, base_path) -> ConnectorRunner:
+async def previous_connector_docker_runner_fixture(previous_connector_image_name, base_path, dagger_client) -> ConnectorRunner:
     """Fixture to create a connector runner with the previous connector docker image.
     Returns None if the latest image was not found, to skip downstream tests if the current connector is not yet published to the docker registry.
     Raise not found error if the previous connector image is not latest and expected to be published.
     """
-    return ConnectorRunner(previous_connector_image_name, base_path)
+    return ConnectorRunner(previous_connector_image_name, base_path, dagger_client)
 
 
 @pytest.fixture(name="empty_streams")
@@ -259,7 +274,7 @@ def previous_cached_schemas_fixture() -> MutableMapping[str, AirbyteStream]:
 
 
 @pytest.fixture(name="discovered_catalog")
-def discovered_catalog_fixture(
+async def discovered_catalog_fixture(
     connector_config, docker_runner: ConnectorRunner, cached_schemas, cache_discovered_catalog: bool
 ) -> MutableMapping[str, AirbyteStream]:
     """JSON schemas for each stream"""
@@ -267,7 +282,7 @@ def discovered_catalog_fixture(
     if not cache_discovered_catalog:
         cached_schemas.clear()
     if not cached_schemas:
-        output = docker_runner.call_discover(config=connector_config)
+        output = await docker_runner.call_discover(config=connector_config)
         catalogs = [message.catalog for message in output if message.type == Type.CATALOG]
         for stream in catalogs[-1].streams:
             cached_schemas[stream.name] = stream
@@ -275,7 +290,7 @@ def discovered_catalog_fixture(
 
 
 @pytest.fixture(name="previous_discovered_catalog")
-def previous_discovered_catalog_fixture(
+async def previous_discovered_catalog_fixture(
     connector_config,
     previous_connector_image_name,
     previous_connector_docker_runner: ConnectorRunner,
@@ -293,7 +308,7 @@ def previous_discovered_catalog_fixture(
         previous_cached_schemas.clear()
     if not previous_cached_schemas:
         try:
-            output = previous_connector_docker_runner.call_discover(config=connector_config)
+            output = await previous_connector_docker_runner.call_discover(config=connector_config)
         except dagger.DaggerError:
             logging.warning(
                 "\n DISCOVER on the previous connector version failed. This could be because the current connector config is not compatible with the previous connector version."
@@ -327,9 +342,9 @@ def detailed_logger() -> Logger:
 
 
 @pytest.fixture(name="actual_connector_spec")
-def actual_connector_spec_fixture(request: BaseTest, docker_runner: ConnectorRunner) -> ConnectorSpecification:
+async def actual_connector_spec_fixture(request: BaseTest, docker_runner: ConnectorRunner) -> ConnectorSpecification:
     if not request.instance.spec_cache:
-        output = docker_runner.call_spec()
+        output = await docker_runner.call_spec()
         spec_messages = filter_output(output, Type.SPEC)
         assert len(spec_messages) == 1, "Spec message should be emitted exactly once"
         spec = spec_messages[0].spec
@@ -338,7 +353,7 @@ def actual_connector_spec_fixture(request: BaseTest, docker_runner: ConnectorRun
 
 
 @pytest.fixture(name="previous_connector_spec")
-def previous_connector_spec_fixture(
+async def previous_connector_spec_fixture(
     request: BaseTest, previous_connector_docker_runner: ConnectorRunner
 ) -> Optional[ConnectorSpecification]:
     if previous_connector_docker_runner is None:
@@ -347,7 +362,7 @@ def previous_connector_spec_fixture(
         )
         return None
     if not request.instance.previous_spec_cache:
-        output = previous_connector_docker_runner.call_spec()
+        output = await previous_connector_docker_runner.call_spec()
         spec_messages = filter_output(output, Type.SPEC)
         assert len(spec_messages) == 1, "Spec message should be emitted exactly once"
         spec = spec_messages[0].spec

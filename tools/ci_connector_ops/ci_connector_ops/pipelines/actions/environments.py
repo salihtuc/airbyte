@@ -470,10 +470,12 @@ async def with_connector_acceptance_test(context: ConnectorContext, connector_un
         .with_workdir("/test_input")
         .with_mounted_directory("/test_input", context.get_connector_dir())
         .with_(mounted_connector_secrets(context))
-        # This bursts the CAT cached results everyday.
-        # It's cool because in case of a partially failing nightly build the connectors that already ran CAT won't re-run CAT.
-        # We keep the guarantee that a CAT runs everyday.
-        .with_env_variable("CACHEBUSTER", datetime.utcnow().strftime("%Y%m%d"))
+        # # This bursts the CAT cached results everyday.
+        # # It's cool because in case of a partially failing nightly build the connectors that already ran CAT won't re-run CAT.
+        # # We keep the guarantee that a CAT runs everyday.
+        # .with_env_variable("CACHEBUSTER", datetime.utcnow().strftime("%Y%m%d"))
+        # Disable caching as I don't want to cache pytest failure due to Dagger error ATM
+        .with_env_variable("CACHEBUSTER", datetime.utcnow().isoformat())
         .with_entrypoint(["python", "-m", "pytest", "-p", "connector_acceptance_test.plugin", "--suppress-tests-failed-exit-code"])
     )
     if "_EXPERIMENTAL_DAGGER_RUNNER_HOST" in os.environ:
