@@ -6,8 +6,9 @@
 import json
 import logging
 import os
+import uuid
 from pathlib import Path
-from typing import List, Mapping, Optional
+from typing import List, Mapping, Optional, Union
 
 import dagger
 import docker
@@ -20,6 +21,10 @@ from pydantic import ValidationError
 
 
 class ConnectorRunner:
+    IN_CONTAINER_CONFIG_PATH = "/data/config.json"
+    IN_CONTAINER_CATALOG_PATH = "/data/catalog.json"
+    IN_CONTAINER_STATE_PATH = "/data/state.json"
+
     def __init__(
         self,
         image_name: str,
@@ -39,30 +44,45 @@ class ConnectorRunner:
         return await self._run(["spec"], raise_container_error)
 
     async def call_check(self, config: SecretDict, raise_container_error: bool = False) -> List[AirbyteMessage]:
-        return await self._run(["check", "--config", "/data/tap_config.json"], raise_container_error, config=config)
+        return await self._run(["check", "--config", self.IN_CONTAINER_CONFIG_PATH], raise_container_error, config=config)
 
     async def call_discover(self, config: SecretDict, raise_container_error: bool = False) -> List[AirbyteMessage]:
-        return await self._run(["discover", "--config", "/data/tap_config.json"], raise_container_error, config=config)
+        return await self._run(["discover", "--config", self.IN_CONTAINER_CONFIG_PATH], raise_container_error, config=config)
 
     async def call_read(
-        self, config: SecretDict, catalog: ConfiguredAirbyteCatalog, raise_container_error: bool = False
+        self, config: SecretDict, catalog: ConfiguredAirbyteCatalog, raise_container_error: bool = False, enable_caching: bool = True
     ) -> List[AirbyteMessage]:
         return await self._run(
-            ["read", "--config", "/data/tap_config.json", "--catalog", "/data/catalog.json"],
+            ["read", "--config", self.IN_CONTAINER_CONFIG_PATH, "--catalog", self.IN_CONTAINER_CATALOG_PATH],
             raise_container_error,
             config=config,
             catalog=catalog,
+            enable_caching=enable_caching,
         )
 
     async def call_read_with_state(
-        self, config: SecretDict, catalog: ConfiguredAirbyteCatalog, state: dict, raise_container_error: bool = False
+        self,
+        config: SecretDict,
+        catalog: ConfiguredAirbyteCatalog,
+        state: dict,
+        raise_container_error: bool = False,
+        enable_caching: bool = True,
     ) -> List[AirbyteMessage]:
         return await self._run(
-            ["read", "--config", "/data/tap_config.json", "--catalog", "/data/catalog.json", "--state", "/data/state.json"],
+            [
+                "read",
+                "--config",
+                self.IN_CONTAINER_CONFIG_PATH,
+                "--catalog",
+                self.IN_CONTAINER_CATALOG_PATH,
+                "--state",
+                self.IN_CONTAINER_STATE_PATH,
+            ],
             raise_container_error,
             config=config,
             catalog=catalog,
             state=state,
+            enable_caching=enable_caching,
         )
 
     async def get_container_env_variable_value(self, name: str) -> str:
@@ -118,15 +138,41 @@ class ConnectorRunner:
         return container
 
     async def _run(
-        self, airbyte_command: List[str], raise_container_error: bool, config=None, catalog=None, state=None
+        self,
+        airbyte_command: List[str],
+        raise_container_error: bool,
+        config: SecretDict = None,
+        catalog: dict = None,
+        state: Union[dict, list] = None,
+        enable_caching=True,
     ) -> List[AirbyteMessage]:
+        """_summary_
+
+        Args:
+            airbyte_command (List[str]): The command to run in the connector container.
+            raise_container_error (bool): Whether to raise an error if the container fails to run the command.
+            config (SecretDict, optional): The config to mount to the container. Defaults to None.
+            catalog (dict, optional): The catalog to mount to the container. Defaults to None.
+            state (Union[dict, list], optional): The state to mount to the container. Defaults to None.
+            enable_caching (bool, optional): Whether to enable command output caching. Defaults to True.
+
+        Raises:
+            e: _description_
+
+        Returns:
+            List[AirbyteMessage]: _description_
+        """
         container = self._connector_under_test_container
+        if not enable_caching:
+            container = container.with_env_variable("CAT_CACHEBUSTER", str(uuid.uuid4()))
         if config:
-            container = container.with_new_file("/data/tap_config.json", json.dumps(dict(config)))
+            container = container.with_new_file(self.IN_CONTAINER_CONFIG_PATH, json.dumps(dict(config)))
         if state:
-            container = container.with_new_file("/data/state.json", json.dumps(state))
+            container = container.with_new_file(self.IN_CONTAINER_STATE_PATH, json.dumps(state))
         if catalog:
-            container = container.with_new_file("/data/catalog.json", catalog.json())
+            container = container.with_new_file(self.IN_CONTAINER_CATALOG_PATH, catalog.json())
+        for key, value in self._custom_environment_variables.items():
+            container = container.with_env_variable(key, str(value))
         try:
             container = container.with_exec(airbyte_command)
             output = await container.stdout()
@@ -137,7 +183,7 @@ class ConnectorRunner:
                 if isinstance(e, dagger.ExecError):
                     output = e.stdout + e.stderr
                 else:
-                    output = str(e)
+                    pytest.fail(f"Failed to run command {airbyte_command} in container {self.image_name} with error: {e}")
         return self.parse_airbyte_messages_from_command_output(output)
 
     def parse_airbyte_messages_from_command_output(self, command_output: str) -> List[AirbyteMessage]:
