@@ -547,8 +547,8 @@ class TestSpec(BaseTest):
     # See https://github.com/airbytehq/airbyte/issues/15551
     async def test_image_environment_variables(self, docker_runner: ConnectorRunner):
         """Check that connector's docker image has required envs"""
-        assert await docker_runner.get_container_env_variable("AIRBYTE_ENTRYPOINT"), "AIRBYTE_ENTRYPOINT must be set in dockerfile"
-        assert await docker_runner.get_container_env_variable("AIRBYTE_ENTRYPOINT") == await docker_runner.get_container_entrypoint()
+        assert await docker_runner.get_container_env_variable_value("AIRBYTE_ENTRYPOINT"), "AIRBYTE_ENTRYPOINT must be set in dockerfile"
+        assert await docker_runner.get_container_env_variable_value("AIRBYTE_ENTRYPOINT") == await docker_runner.get_container_entrypoint()
 
 
 @pytest.mark.default_timeout(30)

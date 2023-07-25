@@ -31,6 +31,11 @@ MAIN_REQUIREMENTS = [
     "requests",
     "anyio",
     "pytest-custom_exit_code",
+    "docker>=6,<7",
+    # Pinning requests and urllib3 to avoid an issue with dockerpy and requests 2.
+    # Related issue: https://github.com/docker/docker-py/issues/3113
+    "urllib3<2.0",
+    "requests<2.29.0",
 ]
 
 setuptools.setup(
